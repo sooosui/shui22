@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 产品需求分析工具</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- 头部导航 -->
+  <!-- ============================================================ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🔍</span>
+        <span class="logo-text">Product Discovery</span>
+      </div>
+      <div class="header-badge">AI 驱动 · 多Agent协作</div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- 主容器 -->
+  <!-- ============================================================ -->
+  <main class="container">
+
+    <!-- ========== 步骤指示器 ========== -->
+    <div class="stepper" id="stepper">
+      <div class="step active" data-step="1">
+        <div class="step-num">1</div>
+        <div class="step-label">输入信息</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-num">2</div>
+        <div class="step-label">生成角色</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-num">3</div>
+        <div class="step-label">模拟访谈</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-num">4</div>
+        <div class="step-label">需求融合</div>
+      </div>
+      <div class="step" data-step="5">
+        <div class="step-num">5</div>
+        <div class="step-label">查看报告</div>
+      </div>
+    </div>
+
+    <!-- ========== 视图1: 输入表单 ========== -->
+    <section class="view" id="view-input">
+      <div class="card hero-card">
+        <h1 class="hero-title">发现你的产品该做什么</h1>
+        <p class="hero-subtitle">
+          AI 将模拟多个真实客户角色进行深度访谈，<br>
+          自动融合需求，生成产品规格文档。
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="product">产品类型</label>
+            <input type="text" id="product"
+                   placeholder="例如：项目管理工具、在线教育平台..."
+                   autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label for="customers">目标客户</label>
+            <input type="text" id="customers"
+                   placeholder="例如：中小企业的远程开发团队..."
+                   autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label>模拟客户数量：<strong id="count-val">4</strong> 人</label>
+            <input type="range" id="count" min="1" max="10" value="4" step="1">
+            <div class="range-labels">
+              <span>1</span><span>10</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>追问深度：<strong id="rounds-val">2</strong> 轮</label>
+            <input type="range" id="rounds" min="0" max="3" value="2" step="1">
+            <div class="range-labels">
+              <span>仅初问</span><span>深度追问</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-start" disabled>
+          开始分析
+        </button>
+
+        <div class="quick-examples">
+          <span class="examples-label">快捷示例：</span>
+          <button class="btn-example" data-product="项目管理工具" data-customers="10人以下创业团队">项目管理 · 创业团队</button>
+          <button class="btn-example" data-product="在线教育平台" data-customers="大学生和职场新人">在线教育 · 学生职场</button>
+          <button class="btn-example" data-product="CRM客户管理系统" data-customers="保险行业销售团队">CRM · 保险销售</button>
+          <button class="btn-example" data-product="AI写作助手" data-customers="内容创作者和自媒体人">AI写作 · 自媒体</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 视图2: 进度展示 ========== -->
+    <section class="view hidden" id="view-progress">
+      <div class="card">
+        <div class="progress-header">
+          <h2 id="progress-title">正在生成客户角色...</h2>
+          <div class="spinner"></div>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+        <div class="progress-phase" id="progress-phase">
+          <!-- 动态填充 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 视图3: 报告展示 ========== -->
+    <section class="view hidden" id="view-report">
+      <div id="report-content">
+        <!-- 动态填充 -->
+      </div>
+      <div class="report-actions">
+        <button class="btn-secondary" id="btn-download">📥 下载 Markdown 报告</button>
+        <button class="btn-outline" id="btn-restart">🔄 重新分析</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>基于 Anthropic Claude API · 模拟访谈数据仅供参考</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/report.js"></script>
+</body>
+</html>
