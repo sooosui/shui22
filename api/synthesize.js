@@ -122,36 +122,118 @@ ${interviewsText}
 }
 
 function parseSpecJSON(text) {
-  text = text.trim();
-  if (text.startsWith('```json')) text = text.slice(7);
-  if (text.startsWith('```')) text = text.slice(3);
-  if (text.endsWith('```')) text = text.slice(0, -3);
+  // Step 1: Normalize whitespace and strip markdown
   text = text.trim();
 
-  try {
-    const data = JSON.parse(text);
+  // Remove markdown code blocks — handle all variations
+  text = text.replace(/^```(?:json|js|javascript)?\s*\n?/i, '');
+  text = text.replace(/\n?\s*```\s*$/, '');
+  text = text.trim();
 
-    // Normalize features with priority
-    const addPriority = (items, priority) =>
-      (items || []).map((f) => ({ ...f, priority: f.priority || priority }));
+  // Step 2: Try parsing directly
+  const data = tryParseJSON(text);
+  if (data) return normalizeSpec(data);
 
-    return {
-      executive_summary: data.executive_summary || '',
-      p0_features: addPriority(data.p0_features, 'P0'),
-      p1_features: addPriority(data.p1_features, 'P1'),
-      p2_features: addPriority(data.p2_features, 'P2'),
-      contradictions: data.contradictions || '',
-      mvp_scope: data.mvp_scope || '',
-      tech_stack: data.tech_stack || '',
-      market_insights: data.market_insights || '',
-    };
-  } catch {
-    // Try to extract JSON object
-    const start = text.indexOf('{');
-    const end = text.lastIndexOf('}') + 1;
-    if (start >= 0 && end > start) {
-      return parseSpecJSON(text.slice(start, end));
-    }
-    throw new Error(`无法解析融合 JSON: ${text.slice(0, 200)}`);
+  // Step 3: Try to extract JSON object boundaries
+  const extracted = extractJSON(text);
+  if (extracted) {
+    const d = tryParseJSON(extracted);
+    if (d) return normalizeSpec(d);
   }
+
+  // Step 4: Last resort — try to fix common issues
+  const fixed = fixCommonJSONIssues(text);
+  if (fixed) {
+    const extracted2 = extractJSON(fixed);
+    if (extracted2) {
+      const d = tryParseJSON(extracted2);
+      if (d) return normalizeSpec(d);
+    }
+  }
+
+  console.error('Failed to parse synthesis JSON. Raw text:', text.slice(0, 500));
+  throw new Error(`无法解析融合 JSON，请联系开发者。原始文本前 200 字: ${text.slice(0, 200)}`);
+}
+
+function tryParseJSON(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function extractJSON(text) {
+  // Find the outermost JSON object
+  let depth = 0;
+  let start = -1;
+
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (text[i] === '}') {
+      depth--;
+      if (depth === 0 && start >= 0) {
+        return text.slice(start, i + 1);
+      }
+    }
+  }
+
+  return null;
+}
+
+function fixCommonJSONIssues(text) {
+  // Fix unescaped newlines in string values (within quotes)
+  // This is a simplified fix — we replace raw newlines inside JSON strings
+  let fixed = '';
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (escaped) {
+      fixed += ch;
+      escaped = false;
+      continue;
+    }
+
+    if (ch === '\\') {
+      fixed += ch;
+      escaped = true;
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = !inString;
+    }
+
+    // Replace unescaped newlines inside strings
+    if (inString && ch === '\n') {
+      fixed += '\\n';
+    } else if (inString && ch === '\r') {
+      // skip \r
+    } else {
+      fixed += ch;
+    }
+  }
+
+  return fixed;
+}
+
+function normalizeSpec(data) {
+  const addPriority = (items, priority) =>
+    (items || []).map((f) => ({ ...f, priority: f.priority || priority }));
+
+  return {
+    executive_summary: data.executive_summary || '',
+    p0_features: addPriority(data.p0_features, 'P0'),
+    p1_features: addPriority(data.p1_features, 'P1'),
+    p2_features: addPriority(data.p2_features, 'P2'),
+    contradictions: data.contradictions || '',
+    mvp_scope: data.mvp_scope || '',
+    tech_stack: data.tech_stack || '',
+    market_insights: data.market_insights || '',
+  };
 }

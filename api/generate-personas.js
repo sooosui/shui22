@@ -86,21 +86,33 @@ export default async function handler(req, res) {
 }
 
 function parsePersonaJSON(text) {
+  // Step 1: Normalize whitespace and strip markdown
   text = text.trim();
-  if (text.startsWith('```json')) text = text.slice(7);
-  if (text.startsWith('```')) text = text.slice(3);
-  if (text.endsWith('```')) text = text.slice(0, -3);
+  text = text.replace(/^```(?:json|js|javascript)?\s*\n?/i, '');
+  text = text.replace(/\n?\s*```\s*$/, '');
   text = text.trim();
 
+  // Step 2: Try parsing directly
+  const data = tryParseJSON(text);
+  if (data) return data;
+
+  // Step 3: Try to extract JSON array
+  const start = text.indexOf('[');
+  const end = text.lastIndexOf(']') + 1;
+  if (start >= 0 && end > start) {
+    const extracted = text.slice(start, end);
+    const d = tryParseJSON(extracted);
+    if (d) return d;
+  }
+
+  console.error('Failed to parse persona JSON. Raw text:', text.slice(0, 500));
+  throw new Error(`无法解析角色 JSON，原始文本前 200 字: ${text.slice(0, 200)}`);
+}
+
+function tryParseJSON(text) {
   try {
     return JSON.parse(text);
   } catch {
-    // Try to extract JSON array
-    const start = text.indexOf('[');
-    const end = text.lastIndexOf(']') + 1;
-    if (start >= 0 && end > start) {
-      return JSON.parse(text.slice(start, end));
-    }
-    throw new Error(`无法解析角色 JSON: ${text.slice(0, 200)}`);
+    return null;
   }
 }
