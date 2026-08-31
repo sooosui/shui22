@@ -3,22 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 产品需求分析工具</title>
+  <title>PM Studio · 产品经理工具站</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- ============================================================ -->
-  <!-- 头部导航 -->
+  <!-- 头部 + 导航 -->
   <!-- ============================================================ -->
   <header class="header">
     <div class="header-inner">
       <div class="logo">
-        <span class="logo-icon">🔍</span>
-        <span class="logo-text">Product Discovery</span>
+        <span class="logo-icon">🧰</span>
+        <span class="logo-text">PM Studio</span>
       </div>
-      <div class="header-badge">AI 驱动 · 多Agent协作</div>
+      <div class="header-badge">AI 驱动 · 7 大产品工具</div>
     </div>
+    <nav class="nav">
+      <div class="nav-inner">
+        <button class="nav-item active" data-tool="interview">💬 需求访谈</button>
+        <button class="nav-item" data-tool="agents">👥 用户库</button>
+        <button class="nav-item" data-tool="prd">📄 PRD</button>
+        <button class="nav-item" data-tool="competitor">⚔️ 竞品分析</button>
+        <button class="nav-item" data-tool="stories">📝 用户故事</button>
+        <button class="nav-item" data-tool="priority">🎯 优先级</button>
+        <button class="nav-item" data-tool="roadmap">🗺️ 路线图</button>
+      </div>
+    </nav>
   </header>
 
   <!-- ============================================================ -->
@@ -26,121 +37,181 @@
   <!-- ============================================================ -->
   <main class="container">
 
-    <!-- ========== 步骤指示器 ========== -->
-    <div class="stepper" id="stepper">
-      <div class="step active" data-step="1">
-        <div class="step-num">1</div>
-        <div class="step-label">输入信息</div>
-      </div>
-      <div class="step" data-step="2">
-        <div class="step-num">2</div>
-        <div class="step-label">生成角色</div>
-      </div>
-      <div class="step" data-step="3">
-        <div class="step-num">3</div>
-        <div class="step-label">模拟访谈</div>
-      </div>
-      <div class="step" data-step="4">
-        <div class="step-num">4</div>
-        <div class="step-label">需求融合</div>
-      </div>
-      <div class="step" data-step="5">
-        <div class="step-num">5</div>
-        <div class="step-label">查看报告</div>
-      </div>
-    </div>
+    <!-- ========== 工具 1：需求访谈 ========== -->
+    <section class="tool-view active" id="view-interview">
 
-    <!-- ========== 视图1: 输入表单 ========== -->
-    <section class="view" id="view-input">
-      <div class="card hero-card">
-        <h1 class="hero-title">发现你的产品该做什么</h1>
-        <p class="hero-subtitle">
-          AI 将模拟多个真实客户角色进行深度访谈，<br>
-          自动融合需求，生成产品规格文档。
-        </p>
+      <!-- 步骤指示器 -->
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="1"><div class="step-num">1</div><div class="step-label">输入信息</div></div>
+        <div class="step" data-step="2"><div class="step-num">2</div><div class="step-label">生成角色</div></div>
+        <div class="step" data-step="3"><div class="step-num">3</div><div class="step-label">模拟访谈</div></div>
+        <div class="step" data-step="4"><div class="step-num">4</div><div class="step-label">需求融合</div></div>
+        <div class="step" data-step="5"><div class="step-num">5</div><div class="step-label">查看报告</div></div>
+      </div>
 
+      <!-- 视图：输入 -->
+      <div class="view" id="iv-input">
+        <div class="card hero-card">
+          <h1 class="hero-title">发现你的产品该做什么</h1>
+          <p class="hero-subtitle">AI 模拟多个真实客户角色进行深度访谈，自动融合需求，生成产品规格文档。</p>
+
+          <!-- 角色来源选择 -->
+          <div class="source-tabs" id="source-tabs">
+            <button class="source-tab active" data-source="auto">🤖 AI 自动生成</button>
+            <button class="source-tab" data-source="library">👥 从用户库选</button>
+            <button class="source-tab" data-source="manual">✍️ 手动添加</button>
+          </div>
+
+          <!-- 来源：AI 自动生成 -->
+          <div class="source-panel" id="panel-auto">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="iv-product">产品类型</label>
+                <input type="text" id="iv-product" placeholder="例如：项目管理工具、在线教育平台..." autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="iv-customers">目标客户</label>
+                <input type="text" id="iv-customers" placeholder="例如：中小企业的远程开发团队..." autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label>模拟客户数量：<strong id="iv-count-val">4</strong> 人</label>
+                <input type="range" id="iv-count" min="1" max="10" value="4" step="1">
+                <div class="range-labels"><span>1</span><span>10</span></div>
+              </div>
+              <div class="form-group">
+                <label>追问深度：<strong id="iv-rounds-val">2</strong> 轮</label>
+                <input type="range" id="iv-rounds" min="0" max="3" value="2" step="1">
+                <div class="range-labels"><span>仅初问</span><span>深度追问</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 来源：从用户库选 -->
+          <div class="source-panel hidden" id="panel-library">
+            <p class="panel-hint">勾选要参与访谈的角色（至少 1 个）：</p>
+            <div class="agent-select-list" id="agent-list"></div>
+          </div>
+
+          <!-- 来源：手动添加 -->
+          <div class="source-panel hidden" id="panel-manual">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>姓名 *</label>
+                <input type="text" id="mp-name" placeholder="例如：王芳">
+              </div>
+              <div class="form-group">
+                <label>职业 / 角色</label>
+                <input type="text" id="mp-role" placeholder="例如：财务主管">
+              </div>
+              <div class="form-group">
+                <label>年龄</label>
+                <input type="number" id="mp-age" placeholder="35" min="1">
+              </div>
+              <div class="form-group">
+                <label>核心痛点</label>
+                <input type="text" id="mp-pain" placeholder="例如：报销流程繁琐，贴票麻烦">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label>使用场景</label>
+                <input type="text" id="mp-scenarios" placeholder="例如：每月集中报销，审批周期长">
+              </div>
+            </div>
+            <button type="button" class="btn-outline" id="btn-add-persona">＋ 添加该角色</button>
+            <div class="manual-list" id="manual-list"></div>
+          </div>
+
+          <button class="btn-primary" id="btn-start" disabled>开始分析</button>
+
+          <div class="quick-examples">
+            <span class="examples-label">快捷示例：</span>
+            <button class="btn-example" data-product="项目管理工具" data-customers="10人以下创业团队">项目管理 · 创业团队</button>
+            <button class="btn-example" data-product="在线教育平台" data-customers="大学生和职场新人">在线教育 · 学生职场</button>
+            <button class="btn-example" data-product="CRM客户管理系统" data-customers="保险行业销售团队">CRM · 保险销售</button>
+            <button class="btn-example" data-product="AI写作助手" data-customers="内容创作者和自媒体人">AI写作 · 自媒体</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 视图：进度 -->
+      <div class="view hidden" id="iv-progress">
+        <div class="card">
+          <div class="progress-header">
+            <h2 id="iv-progress-title">正在生成客户角色...</h2>
+            <div class="spinner"></div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="iv-progress-bar"></div>
+          </div>
+          <div class="progress-phase" id="iv-progress-phase"></div>
+        </div>
+      </div>
+
+      <!-- 视图：报告 -->
+      <div class="view hidden" id="iv-report">
+        <div id="iv-report-content"></div>
+        <div class="report-actions">
+          <button class="btn-secondary" id="btn-download">📥 下载 Markdown 报告</button>
+          <button class="btn-outline" id="btn-restart">🔄 重新分析</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 工具 2：虚拟用户库 ========== -->
+    <section class="tool-view" id="view-agents">
+      <div class="card agent-editor" id="agent-editor">
+        <div class="tool-title"><span class="tool-icon">👤</span> <span id="agent-editor-title">新建角色</span></div>
         <div class="form-grid">
-          <div class="form-group">
-            <label for="product">产品类型</label>
-            <input type="text" id="product"
-                   placeholder="例如：项目管理工具、在线教育平台..."
-                   autocomplete="off">
-          </div>
-
-          <div class="form-group">
-            <label for="customers">目标客户</label>
-            <input type="text" id="customers"
-                   placeholder="例如：中小企业的远程开发团队..."
-                   autocomplete="off">
-          </div>
-
-          <div class="form-group">
-            <label>模拟客户数量：<strong id="count-val">4</strong> 人</label>
-            <input type="range" id="count" min="1" max="10" value="4" step="1">
-            <div class="range-labels">
-              <span>1</span><span>10</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>追问深度：<strong id="rounds-val">2</strong> 轮</label>
-            <input type="range" id="rounds" min="0" max="3" value="2" step="1">
-            <div class="range-labels">
-              <span>仅初问</span><span>深度追问</span>
-            </div>
-          </div>
+          <div class="form-group"><label>姓名 *</label><input type="text" id="ag-name" placeholder="例如：王芳"></div>
+          <div class="form-group"><label>职业 / 角色</label><input type="text" id="ag-role" placeholder="例如：财务主管"></div>
+          <div class="form-group"><label>年龄</label><input type="number" id="ag-age" placeholder="35"></div>
+          <div class="form-group"><label>公司类型</label><input type="text" id="ag-company" placeholder="例如：制造业中小企业"></div>
+          <div class="form-group"><label>经验</label><input type="text" id="ag-experience" placeholder="例如：10 年从业经验"></div>
+          <div class="form-group"><label>技术偏好</label><input type="text" id="ag-tech" placeholder="例如：轻度使用、习惯微信生态"></div>
+          <div class="form-group"><label>预算</label><input type="text" id="ag-budget" placeholder="例如：年预算 5 万以内"></div>
+          <div class="form-group"><label>性格特点</label><input type="text" id="ag-personality" placeholder="例如：谨慎、注重性价比"></div>
         </div>
-
-        <button class="btn-primary" id="btn-start" disabled>
-          开始分析
-        </button>
-
-        <div class="quick-examples">
-          <span class="examples-label">快捷示例：</span>
-          <button class="btn-example" data-product="项目管理工具" data-customers="10人以下创业团队">项目管理 · 创业团队</button>
-          <button class="btn-example" data-product="在线教育平台" data-customers="大学生和职场新人">在线教育 · 学生职场</button>
-          <button class="btn-example" data-product="CRM客户管理系统" data-customers="保险行业销售团队">CRM · 保险销售</button>
-          <button class="btn-example" data-product="AI写作助手" data-customers="内容创作者和自媒体人">AI写作 · 自媒体</button>
+        <div class="form-group"><label>核心痛点（逗号 / 换行分隔）</label><textarea id="ag-pain" rows="2"></textarea></div>
+        <div class="form-group"><label>使用场景（逗号 / 换行分隔）</label><textarea id="ag-scenarios" rows="2"></textarea></div>
+        <div class="agent-editor-actions">
+          <button class="btn-secondary" id="btn-save-agent">保存</button>
+          <button class="btn-outline" id="btn-cancel-agent">取消</button>
+          <button class="btn-outline" id="btn-ai-generate">✨ AI 帮我生成</button>
         </div>
       </div>
+
+      <div class="agents-toolbar">
+        <div class="tool-title"><span class="tool-icon">👥</span> 我的虚拟用户（<span id="agents-count">0</span>）</div>
+        <div class="toolbar-btns">
+          <button class="btn-secondary" id="btn-new-agent">＋ 新建角色</button>
+          <button class="btn-outline" id="btn-export-agents">导出</button>
+          <button class="btn-outline" id="btn-import-agents">导入</button>
+          <input type="file" id="import-file" accept=".json,application/json" class="hidden">
+        </div>
+      </div>
+      <div class="agents-list" id="agents-list"></div>
     </section>
 
-    <!-- ========== 视图2: 进度展示 ========== -->
-    <section class="view hidden" id="view-progress">
-      <div class="card">
-        <div class="progress-header">
-          <h2 id="progress-title">正在生成客户角色...</h2>
-          <div class="spinner"></div>
-        </div>
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill" id="progress-bar"></div>
-        </div>
-        <div class="progress-phase" id="progress-phase">
-          <!-- 动态填充 -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== 视图3: 报告展示 ========== -->
-    <section class="view hidden" id="view-report">
-      <div id="report-content">
-        <!-- 动态填充 -->
-      </div>
-      <div class="report-actions">
-        <button class="btn-secondary" id="btn-download">📥 下载 Markdown 报告</button>
-        <button class="btn-outline" id="btn-restart">🔄 重新分析</button>
-      </div>
-    </section>
+    <!-- ========== 工具 3-7：文档工具（由 doc-tools.js 渲染） ========== -->
+    <section class="tool-view" id="view-prd" data-doc="prd"></section>
+    <section class="tool-view" id="view-competitor" data-doc="competitor"></section>
+    <section class="tool-view" id="view-stories" data-doc="stories"></section>
+    <section class="tool-view" id="view-priority" data-doc="priority"></section>
+    <section class="tool-view" id="view-roadmap" data-doc="roadmap"></section>
 
   </main>
 
   <footer class="footer">
-    <p>基于 Anthropic Claude API · 模拟访谈数据仅供参考</p>
+    <p>PM Studio · 基于 DeepSeek · 数据仅存本地浏览器</p>
   </footer>
 
   <script src="js/config.js"></script>
   <script src="js/llm.js"></script>
+  <script src="js/md.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/views/interview.js"></script>
+  <script src="js/views/agents.js"></script>
+  <script src="js/views/doc-tools.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/report.js"></script>
 </body>
 </html>
