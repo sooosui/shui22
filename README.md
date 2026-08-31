@@ -17,7 +17,7 @@
 
 - 前端：`index.html` + `css/` + `js/`
 - 业务逻辑：`js/llm.js`（生成角色 / 访谈 / 融合 三个步骤直接在浏览器调用 DeepSeek）
-- 配置：`js/config.js`（含 API key，本地文件，已 gitignore）
+- 配置：`js/config.js`（含 API key，已提交进仓库）
 
 ## 本地运行
 
@@ -36,16 +36,11 @@ vercel dev
 
 然后打开 http://localhost:8000（或提示的地址）。
 
-> 首次运行前需在 `js/config.js` 填入你的 DeepSeek API key。
-
 ## 部署（GitHub Pages）
 
-1. 在 GitHub 仓库 Settings → Secrets → Actions 添加 `DEEPSEEK_API_KEY`
-   （可选：`DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL`）
-2. 推送到 `master` 分支，GitHub Actions 会自动构建并部署
-3. 在 Settings → Pages 里 Source 选择 "GitHub Actions"
+推送到 `master` 分支即自动发布。首次需在仓库 Settings → Pages 里把 Source 设为 "Deploy from a branch"（分支 `master`、目录 `/`）。
 
-`js/config.js` 会在部署时由 Actions 从 Secret 注入，不会提交进 git。
+> ⚠️ `js/config.js` 里的 API key 会公开在网站源码中（前端直连的代价）。建议在 DeepSeek 后台单独开一个有消费限额的 key。
 
 ## 说明
 
