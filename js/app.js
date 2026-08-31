@@ -98,20 +98,7 @@ function updateStepper(activeStep) {
 // API helpers
 // ================================================================
 
-async function apiCall(endpoint, body) {
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `HTTP ${res.status}`);
-  }
-
-  return res.json();
-}
+// LLM 直连逻辑已移到 js/llm.js：generatePersonas / interviewRound / synthesize
 
 // ================================================================
 // Main flow
@@ -135,7 +122,7 @@ async function startAnalysis() {
     elProgressBar.style.width = '10%';
     elProgressPhase.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">🤖 AI 正在分析目标客户群体...</p>';
 
-    const personaResult = await apiCall('/api/generate-personas', {
+    const personaResult = await generatePersonas({
       product_type: product,
       customer_desc: customers,
       persona_count: count,
@@ -182,7 +169,7 @@ async function startAnalysis() {
       for (let r = 0; r < totalRounds; r++) {
         updatePersonaStatus(i, 'running', `第${r + 1}/${totalRounds}轮...`);
 
-        const roundResult = await apiCall('/api/interview', {
+        const roundResult = await interviewRound({
           persona: p,
           product_type: product,
           round_idx: r,
@@ -211,7 +198,7 @@ async function startAnalysis() {
     elProgressBar.style.width = '70%';
     elProgressPhase.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">🔄 AI 正在分析所有客户的需求，提炼共性...</p>';
 
-    const synthResult = await apiCall('/api/synthesize', {
+    const synthResult = await synthesize({
       requirements: analysisData.requirements,
       product_type: product,
       customer_desc: customers,
