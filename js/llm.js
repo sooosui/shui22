@@ -1,47 +1,28 @@
 /**
- * DeepSeek (Anthropic-compatible) 直连核心客户端 + 通用 JSON 解析助手
+ * LLM 核心客户端（经后端代理）+ 通用 JSON 解析助手
  *
- * 浏览器直接调用 api.deepseek.com/anthropic，无需后端。
- * 配置来自 js/config.js 的 window.DEEPSEEK_CONFIG。
+ * 前端所有 AI 调用统一走 /api/chat（后端 serverless 函数），
+ * API Key 只保存在服务端环境变量里，绝不出现在浏览器 / 仓库源码中。
  */
 
-const CFG = window.DEEPSEEK_CONFIG || {};
-
-async function deepseekChat({ system, messages, temperature = 0.7, maxTokens = 4096 }) {
-  const apiKey = CFG.apiKey;
-  const baseUrl = CFG.baseUrl || 'https://api.deepseek.com/anthropic';
-  const model = CFG.model || 'claude-sonnet-5';
-
-  if (!apiKey) {
-    throw new Error('缺少 API Key：请在 js/config.js 中配置 window.DEEPSEEK_CONFIG.apiKey');
-  }
-
-  const res = await fetch(`${baseUrl}/v1/messages`, {
+async function deepseekChat({ system, messages, temperature = 0.7, maxTokens = 4096, model }) {
+  const res = await fetch('/api/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      temperature,
-      ...(system ? { system } : {}),
-      messages,
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system, messages, temperature, max_tokens: maxTokens, model }),
   });
 
   if (!res.ok) {
-    const err = await res.text().catch(() => res.statusText);
-    throw new Error(`DeepSeek API error: ${res.status} ${err}`);
+    let msg = `API 请求失败 (${res.status})`;
+    try {
+      const data = await res.json();
+      if (data && data.error) msg = data.error;
+    } catch { /* ignore */ }
+    throw new Error(msg);
   }
 
   const data = await res.json();
-  return data.content
-    .filter((b) => b.type === 'text')
-    .map((b) => b.text)
-    .join('');
+  return data.text;
 }
 
 // ================================================================
